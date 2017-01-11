@@ -28,9 +28,6 @@
 
 namespace local_facebook\task;
 
-//**********************************************
-//**********************************************
-
 class facebook_notifications extends \core\task\scheduled_task {
 	public function get_name() {
 		return get_string("task_courses", "local_sync");
