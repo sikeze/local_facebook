@@ -20,6 +20,7 @@
  * @copyright  2015 Mihail Pozarski (mipozarski@alumnos.uai.cl)
  * @copyright  2015-2016 Hans Jeria (hansjeria@gmail.com)
  * @copyright  2016 Mark Michaelsen (mmichaelsen678@gmail.com)
+ * @copyright  2017 Javier Gonzalez (javiergonzalez@alumnos.uai.cl)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -530,25 +531,6 @@ function facebookclass(){
 			"default_graph_version" => "v2.5"]);
 	return $fb;	
 }
-//***************************************
-function facebookclass2(){
-	require_once(dirname(__FILE__).'/config.php');
-	require_once ($CFG->libdir . '/clilib.php');
-	require_once($CFG->dirroot."/local/facebook/app/Facebook/autoload.php");
-	require_once($CFG->dirroot."/local/facebook/app/Facebook/FacebookRequest.php");
-	include $CFG->dirroot."/local/facebook/app/Facebook/Facebook.php";
-	use Facebook\FacebookResponse;
-	use Facebook\FacebookRedirectLoginHelper;
-	use Facebook\FacebookRequire;
-	use Facebook\Facebook;
-	use Facebook\Request;
-	$fb = new Facebook([
-			"app_id" => $appid,
-			"app_secret" => $secretid,
-			"default_graph_version" => "v2.5"]);
-	return $fb;
-}
-//***************************************
 function getfacebookusersid(){
 	
 	$sqlusers = "SELECT  u.id AS id,
