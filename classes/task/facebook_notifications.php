@@ -33,10 +33,10 @@ class facebook_notifications extends \core\task\scheduled_task {
 		return get_string("task_courses", "local_sync");
 	}
 	public function execute(){
-		$fb = facebookclass();
-		$initialtime = time();
 		$appid = $CFG->fbk_appid;
 		$secretid = $CFG->fbk_scrid;
+		$fb = facebookclass($appid, $secretid);
+		$initialtime = time();
 		$sent = 0;
 
 

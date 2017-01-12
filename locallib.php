@@ -514,7 +514,8 @@ function cmp($a, $b){
 	return strcmp ($b->totalnotifications, $a->totalnotifications);
 }
 
-function facebookclass(){
+function facebookclass($appid, $secretid){
+	global $CFG;
 	require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
 	require_once ($CFG->libdir . '/clilib.php');
 	require_once($CFG->dirroot."/local/facebook/app/Facebook/autoload.php");
@@ -532,7 +533,7 @@ function facebookclass(){
 	return $fb;	
 }
 function getfacebookusersid(){
-	
+	global $DB;
 	$sqlusers = "SELECT  u.id AS id,
 			f.facebookid,
 			u.lastaccess,
