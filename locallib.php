@@ -712,6 +712,7 @@ function handleexceptions($fb, $user, $data){
 				mtrace("Could not update the record. \n");
 			}
 		}
+	return false;
 	}
 }
 function addtoarray($query, $params, $array){

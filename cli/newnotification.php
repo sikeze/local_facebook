@@ -238,23 +238,23 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 		$totalcount = 0;
 		if (isset($arraynewposts[$users->id])){
 			$totalcount = $totalcount + $arraynewposts[$users->id];
-			mtrace($arraynewposts." notifications have been found in posts for user ".$users->id."\n");
+			mtrace($arraynewposts[$users->id]." notifications have been found in posts for user ".$users->id."\n");
 		}
 		if (isset($arraynewresources[$users->id])){
 			$totalcount = $totalcount + $arraynewresources[$users->id];
-			mtrace($arraynewresources." notifications have been found in resources for user ".$users->id."\n");
+			mtrace($arraynewresources[$users->id]." notifications have been found in resources for user ".$users->id."\n");
 		}
 		if (isset($arraynewlinks[$users->id])){
 			$totalcount = $totalcount + $arraynewlinks[$users->id];
-			mtrace($arraynewlinks." notifications have been found in links for user ".$users->id."\n");
+			mtrace($arraynewlinks[$users->id]." notifications have been found in links for user ".$users->id."\n");
 		}
 		if (isset($arraynewemarkings[$users->id])){
 			$totalcount = $totalcount + $arraynewemarkings[$users->id];
-			mtrace($arraynewemarkings." notifications have been found in emarkings for user ".$users->id."\n");
+			mtrace($arraynewemarkings[$users->id]." notifications have been found in emarkings for user ".$users->id."\n");
 		}
 		if (isset($arraynewassignments[$users->id])){
 			$totalcount = $totalcount + $arraynewassignments[$users->id];
-			mtrace($arraynewassignments." notifications have been found in assignments for user ".$users->id."\n");
+			mtrace($arraynewassignments[$users->id]." notifications have been found in assignments for user ".$users->id."\n");
 		}
 		mtrace("A total of ".$totalcount." notifications have been found for user ".$users->id."\n");
 		mtrace("---------------------------------------------------------------------------------------------------");
@@ -272,10 +272,10 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
 			handleexceptions($fb, $users, $data);
-			$notifications = $notifications + $totalcount;
+			$notifications = $notifications + 1;
 		}
 	}
-	mtrace($notifications." have been sent.");
+	mtrace("Notifications have been sent succesfully to ".$notifications."people.");
 	$finaltime = time();
 	mtrace("Execution time: ".$finaltime - $initialtime." seconds.");
 }
