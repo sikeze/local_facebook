@@ -93,7 +93,8 @@ $queryusers = "SELECT
 		WHERE fb.facebookid IS NOT NULL
 		GROUP BY fb.facebookid, us.id";
 
-$queryposts = "SELECT COUNT(fp.id) AS count,
+$queryposts = "SELECT fp.id, 
+		COUNT(fp.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
@@ -112,7 +113,7 @@ $queryposts = "SELECT COUNT(fp.id) AS count,
 		AND fb.facebookid IS NOT NULL
 		GROUP BY fp.id, us.id";
 
-$queryresources = "SELECT 
+$queryresources = "SELECT cm.id,
 		COUNT(cm.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
@@ -131,7 +132,7 @@ $queryresources = "SELECT
 		AND fb.facebookid IS NOT NULL
 		GROUP BY cm.id, us.id";
 
-$querylink = "SELECT
+$querylink = "SELECT url.id,
 		COUNT(url.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
@@ -150,7 +151,8 @@ $querylink = "SELECT
 		AND fb.facebookid IS NOT NULL
 		GROUP BY url.id, us.id";
 		
-$queryemarking = "SELECT COUNT(d.id) AS count,
+$queryemarking = "SELECT d.id, 
+		COUNT(d.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
@@ -169,7 +171,8 @@ $queryemarking = "SELECT COUNT(d.id) AS count,
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
-$queryassignments = "SELECT COUNT(a.id) AS count,
+$queryassignments = "SELECTa.id, 
+		COUNT(a.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
