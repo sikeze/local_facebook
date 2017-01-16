@@ -258,6 +258,7 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 		if (isset($arraynewassignments[$users->id])){
 			$totalcount = $totalcount + $arraynewassignments[$users->id];
 		}
+		mtrace($totalcount." notifications have been found for user ".$users->id."<br>");
 		if ($users->facebookid != null && $totalcount != 0) {
 			if ($totalcount == 1) {
 				$template = "Tienes $totalcount notificación de Webcursos.";

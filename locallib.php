@@ -719,10 +719,6 @@ function addtoarray($query, $params, $array){
 		foreach ($facebookusers as $users){
 			$array[$users->id] = $users->count;
 		}
-		mtrace("la wea");
 	return $array;
-	}
-	else{
-		mtrace("tabla vacia");
 	}
 }
