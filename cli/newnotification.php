@@ -171,7 +171,7 @@ $queryemarking = "SELECT d.id,
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
-$queryassignments = "SELECTa.id, 
+$queryassignments = "SELECT a.id, 
 		COUNT(a.id) AS count,
 		us.id AS userid,
 		fb.facebookid,
