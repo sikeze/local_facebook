@@ -218,12 +218,6 @@ $paramsassignment = array(
 		MODULE_ASSIGN,
 		FACEBOOK_COURSE_MODULE_VISIBLE
 );
-	
-$postsfinalquery = $selectqueryusers." post.count FROM (".$queryusers.") AS user ".$queryposts;
-$resourcesfinalquery = $selectqueryusers." resource.count FROM (".$queryusers.") AS user ".$queryresources;
-$linksfinalquery = $selectqueryusers." newlink.count FROM (".$queryusers.") AS user ".$querylink;
-$emarkingfinalquery = $selectqueryusers." emarking.count FROM (".$queryusers.") AS user ".$queryemarking;
-$assignmentsfinalquery = $selectqueryusers." assignments.count FROM (".$queryusers.") AS user ".$queryassignments;
 
 $arraynewposts = array();
 $arraynewresources = array();
@@ -231,11 +225,11 @@ $arraynewlinks = array();
 $arraynewemarkings = array();
 $arraynewassignments = array();
 
-$arraynewposts = addtoarray($postsfinalquery, array_merge($paramspost, $paramsusers), $arraynewposts);
-$arraynewresources = addtoarray($resourcesfinalquery, array_merge($paramsresource, $paramsusers), $arraynewresources);
-$arraynewlinks = addtoarray($linksfinalquery, array_merge($paramslink, $paramsusers), $arraynewlinks);
-$arraynewemarkings = addtoarray($emarkingfinalquery, $paramsusers, $arraynewemarkings);
-$arraynewassignments = addtoarray($assignmentsfinalquery, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
+$arraynewposts = addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
+$arraynewresources = addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
+$arraynewlinks = addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
+$arraynewemarkings = addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
+$arraynewassignments = addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
 
 if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 	foreach ($facebookusers as $users){
