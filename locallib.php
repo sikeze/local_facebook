@@ -521,11 +521,11 @@ function facebookclass($appid, $secretid){
 	require_once($CFG->dirroot."/local/facebook/app/Facebook/autoload.php");
 	require_once($CFG->dirroot."/local/facebook/app/Facebook/FacebookRequest.php");
 	include $CFG->dirroot."/local/facebook/app/Facebook/Facebook.php";
-	use Facebook\FacebookResponse;
+/*	use Facebook\FacebookResponse;
 	use Facebook\FacebookRedirectLoginHelper;
 	use Facebook\FacebookRequire;
 	use Facebook\Facebook;
-	use Facebook\Request;
+	use Facebook\Request;*/
 	$fb = new Facebook([
 			"app_id" => $appid,
 			"app_secret" => $secretid,
@@ -712,5 +712,17 @@ function handleexceptions($fb, $user, $data){
 			}
 		}
 	}
-	return true;
+}
+function addtoarray($query, $params, $array){
+	global $DB;
+	if ($facebookusers = $DB->get_records_sql($query, $params)){
+		foreach ($facebookusers as $users){
+			$array[$users->id] = $users->count;
+		}
+		mtrace("la wea");
+	return $array;
+	}
+	else{
+		mtrace("tabla vacia");
+	}
 }
