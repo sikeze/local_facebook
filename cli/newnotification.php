@@ -81,13 +81,6 @@ $fb = new Facebook([
 		"app_secret" => $secretid,
 		"default_graph_version" => "v2.5"]);
 
-$selectqueryusers = "SELECT user.id AS id,
-		user.facebookid,
-		user.lastaccess,
-		user.name,
-		user.lasttimechecked,
-		user.email,";
-
 $queryusers = "SELECT  
 		us.id AS id,
 		fb.facebookid,
