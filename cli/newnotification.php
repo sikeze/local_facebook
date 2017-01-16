@@ -69,19 +69,12 @@ cli_heading('Facebook notifications'); // TODO: localize
 echo "\nSearching for new notifications\n";
 echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
 
-// Define used lower in the querys
-define('FACEBOOK_COURSE_MODULE_VISIBLE', 1);
-// Facebook
-define('FACEBOOK_LINKED', 1);
-define('MODULE_ASSIGN', 1);
-
 $initialtime = time();
 $notifications = 0;
 
 
 $appid = $CFG->fbk_appid;
 $secretid = $CFG->fbk_scrid;
-$sent = 0;
 
 $fb = new Facebook([
 		"app_id" => $appid,
@@ -245,20 +238,26 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 		$totalcount = 0;
 		if (isset($arraynewposts[$users->id])){
 			$totalcount = $totalcount + $arraynewposts[$users->id];
+			mtrace($arraynewposts." notifications have been found in posts for user ".$users->id."\n");
 		}
 		if (isset($arraynewresources[$users->id])){
 			$totalcount = $totalcount + $arraynewresources[$users->id];
+			mtrace($arraynewresources." notifications have been found in resources for user ".$users->id."\n");
 		}
 		if (isset($arraynewlinks[$users->id])){
 			$totalcount = $totalcount + $arraynewlinks[$users->id];
+			mtrace($arraynewlinks." notifications have been found in links for user ".$users->id."\n");
 		}
 		if (isset($arraynewemarkings[$users->id])){
 			$totalcount = $totalcount + $arraynewemarkings[$users->id];
+			mtrace($arraynewemarkings." notifications have been found in emarkings for user ".$users->id."\n");
 		}
 		if (isset($arraynewassignments[$users->id])){
 			$totalcount = $totalcount + $arraynewassignments[$users->id];
+			mtrace($arraynewassignments." notifications have been found in assignments for user ".$users->id."\n");
 		}
-		mtrace($totalcount." notifications have been found for user ".$users->id."<br>");
+		mtrace("A total of ".$totalcount." notifications have been found for user ".$users->id."\n");
+		mtrace("---------------------------------------------------------------------------------------------------");
 		if ($users->facebookid != null && $totalcount != 0) {
 			if ($totalcount == 1) {
 				$template = "Tienes $totalcount notificación de Webcursos.";
@@ -272,7 +271,7 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"template" => $template
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
-			handleexceptions($fb, $user, $data);
+			handleexceptions($fb, $users, $data);
 			$notifications = $notifications + $totalcount;
 		}
 	}

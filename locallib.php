@@ -691,6 +691,7 @@ function handleexceptions($fb, $user, $data){
 	
 	try {
 		$response = $fb->post('/'.$user->facebookid.'/notifications', $data);
+		mtrace("Notifications sent to user with facebookid ".$user->facebookid);
 		return $response->getDecodedBody();
 	} catch (Exception $e) {
 		$exception = $e->getMessage();
