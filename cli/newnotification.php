@@ -271,8 +271,9 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"template" => $template
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
-			handleexceptions($fb, $users, $data);
-			$notifications = $notifications + 1;
+			if (handleexceptions($fb, $users, $data)){
+				$notifications = $notifications + 1;
+			}
 		}
 	}
 	mtrace("Notifications have been sent succesfully to ".$notifications."people.");
