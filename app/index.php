@@ -135,15 +135,18 @@ if ($userfacebookinfo != false) {
 	$userfacebookinfo->information = $json;
 	$DB->update_record('facebook_user', $userfacebookinfo);
 	
-	$moodleid = $userfacebookinfo->moodleid;
-	$lastvisit = $userfacebookinfo->lasttimechecked;
 	$userinfo = $DB->get_record ( 'user', array (
-			'id' => $moodleid 
+			'id' => $userfacebookinfo->moodleid 
 	) );
 	
-	if($userinfo->lastaccess > $lastvisit){
+	if($userinfo->lastaccess > time()){
 		$lastvisit = $userinfo->lastaccess;
+	}else{
+		$lastvisit = time();
 	}
+	// updates the user last time in the app
+	$userfacebookinfo->lasttimechecked = $lastvisit;
+	$DB->update_record ( 'facebook_user', $userfacebookinfo );
 	
 	$usercourse = enrol_get_users_courses ( $moodleid );
 	
@@ -232,10 +235,6 @@ if ($userfacebookinfo != false) {
 
 	echo "</div></div>";
 	include 'htmltoinclude/spacer.html';
-	
-	// updates the user last time in the app
-	$userfacebookinfo->lasttimechecked = time ();
-	$DB->update_record ( 'facebook_user', $userfacebookinfo );
 } else {
 	echo '</div></div>';
 	echo '<div class="popup" role="dialog" aria-labelledby="modal">';
