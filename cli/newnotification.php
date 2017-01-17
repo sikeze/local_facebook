@@ -93,9 +93,8 @@ $queryusers = "SELECT
 		WHERE fb.facebookid IS NOT NULL
 		GROUP BY fb.facebookid, us.id";
 
-$queryposts = "SELECT fp.id, 
+$queryposts = "SELECT us.id AS userid,
 		COUNT(fp.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -106,16 +105,16 @@ $queryposts = "SELECT fp.id,
 		INNER JOIN {forum_discussions} AS discussions ON (en.courseid = discussions.course)
 		INNER JOIN {forum_posts} AS fp ON (fp.discussion = discussions.id)
 		INNER JOIN {forum} AS forum ON (forum.id = discussions.forum)
-		INNER JOIN {user} AS us ON (us.id = fp.userid AND uen.userid = us.id)
-		INNER JOIN {course_modules} AS cm ON (cm.instance = forum.id AND cm.visible = ?)
+		INNER JOIN {user} AS us ON (uen.userid = us.id)
+		
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE fp.modified > fb.lasttimechecked OR fp.modified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
-		GROUP BY fp.id, us.id";
-
-$queryresources = "SELECT cm.id,
+		GROUP BY us.id";//lee el doble... triple? de lo qe deberia...
+//INNER JOIN mdl_course_modules AS cm ON (cm.instance = forum.id AND cm.visible = 1 AND cm.course = en.courseid) 
+//deleted and it works...
+$queryresources = "SELECT us.id AS userid,
 		COUNT(cm.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -130,11 +129,10 @@ $queryresources = "SELECT cm.id,
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE r.timemodified > fb.lasttimechecked OR r.timemodified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
-		GROUP BY cm.id, us.id";
+		GROUP BY us.id";
 
-$querylink = "SELECT url.id,
+$querylink = "SELECT us.id AS userid,
 		COUNT(url.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -149,11 +147,10 @@ $querylink = "SELECT url.id,
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE url.timemodified > fb.lasttimechecked OR url.timemodified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
-		GROUP BY url.id, us.id";
+		GROUP BY us.id";
 		
-$queryemarking = "SELECT d.id, 
+$queryemarking = "SELECT us.id AS userid,
 		COUNT(d.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -167,13 +164,12 @@ $queryemarking = "SELECT d.id,
 		INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course = en.courseid)
 		INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking')
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE d.timemodified > fb.lasttimechecked OR d.timemodified > us.lastaccess)
+		WHERE d.timemodified > fb.lasttimechecked OR d.timemodified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
-$queryassignments = "SELECT a.id, 
+$queryassignments = "SELECT us.id AS userid,
 		COUNT(a.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -184,14 +180,12 @@ $queryassignments = "SELECT a.id,
 		INNER JOIN {enrol} AS e ON (c.id = e.courseid)
 		INNER JOIN {user_enrolments} AS ue ON (e.id = ue.enrolid)
 		INNER JOIN {user} AS us ON (us.id = ue.userid)
-		INNER JOIN {course_modules} AS cm ON (c.id = cm.course AND cm.module = ? AND cm.visible = ?)
-		INNER JOIN {assign_submission} AS s ON (a.id = s.assignment)
+		
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE a.timemodified > fb.lasttimechecked OR a.timemodified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
-		GROUP BY a.id, us.id";
-
-
+		GROUP BY us.id";
+//INNER JOIN {course_modules} AS cm ON (c.id = cm.course AND cm.module = ? AND cm.visible = ?)
 
 $paramsusers = array(
 		FACEBOOK_LINKED
@@ -251,7 +245,7 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 			mtrace($arraynewassignments[$users->id]." notifications have been found in assignments for user ".$users->id."\n");
 		}
 		mtrace("A total of ".$totalcount." notifications have been found for user ".$users->id."\n");
-		mtrace("---------------------------------------------------------------------------------------------------");
+		mtrace("--------------------------------------------------------------------------------------------------");
 		if ($users->facebookid != null && $totalcount != 0) {
 			if ($totalcount == 1) {
 				$template = "Tienes $totalcount notificación de Webcursos.";
@@ -270,8 +264,9 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 			}
 		}
 	}
-	mtrace("Notifications have been sent succesfully to ".$notifications."people.");
+	mtrace("Notifications have been sent succesfully to ".$notifications." people.");
 	$finaltime = time();
-	mtrace("Execution time: ".$finaltime - $initialtime." seconds.");
+	$totaltime = $finaltime-$initialtime;
+	mtrace("Execution time: ".$totaltime." seconds.");
 }
 exit(0);
