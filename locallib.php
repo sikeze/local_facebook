@@ -719,7 +719,7 @@ function addtoarray($query, $params, $array){
 	global $DB;
 	if ($facebookusers = $DB->get_records_sql($query, $params)){
 		foreach ($facebookusers as $users){
-			$array[$users->id] = $users->count;
+			$array[$users->userid] = $users->count;
 		}
 	return $array;
 	}

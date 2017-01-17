@@ -72,7 +72,7 @@ echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
 $initialtime = time();
 $notifications = 0;
 
-
+/*
 $appid = $CFG->fbk_appid;
 $secretid = $CFG->fbk_scrid;
 
@@ -80,7 +80,7 @@ $fb = new Facebook([
 		"app_id" => $appid,
 		"app_secret" => $secretid,
 		"default_graph_version" => "v2.5"]);
-
+*/
 $queryusers = "SELECT  
 		us.id AS id,
 		fb.facebookid,
@@ -93,9 +93,8 @@ $queryusers = "SELECT
 		WHERE fb.facebookid IS NOT NULL
 		GROUP BY fb.facebookid, us.id";
 
-$queryposts = "SELECT fp.id, 
+$queryposts = "SELECT us.id AS userid,
 		COUNT(fp.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
@@ -106,12 +105,12 @@ $queryposts = "SELECT fp.id,
 		INNER JOIN {forum_discussions} AS discussions ON (en.courseid = discussions.course)
 		INNER JOIN {forum_posts} AS fp ON (fp.discussion = discussions.id)
 		INNER JOIN {forum} AS forum ON (forum.id = discussions.forum)
-		INNER JOIN {user} AS us ON (us.id = fp.userid AND uen.userid = us.id)
+		INNER JOIN {user} AS us ON (uen.userid = us.id)
 		INNER JOIN {course_modules} AS cm ON (cm.instance = forum.id AND cm.visible = ?)
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE fp.modified > fb.lasttimechecked OR fp.modified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
-		GROUP BY fp.id, us.id";
+		GROUP BY us.id";
 
 $queryresources = "SELECT cm.id,
 		COUNT(cm.id) AS count,
@@ -167,7 +166,7 @@ $queryemarking = "SELECT d.id,
 		INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course = en.courseid)
 		INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking')
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE d.timemodified > fb.lasttimechecked OR d.timemodified > us.lastaccess)
+		WHERE d.timemodified > fb.lasttimechecked OR d.timemodified > us.lastaccess
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
@@ -227,6 +226,8 @@ $arraynewlinks = addtoarray($querylink, array_merge($paramslink, $paramsusers), 
 $arraynewemarkings = addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
 $arraynewassignments = addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
 
+var_dump($arraynewposts);
+
 if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 	foreach ($facebookusers as $users){
 		$totalcount = 0;
@@ -264,14 +265,15 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"message" => "",
 					"template" => $template
 			);	
-			$fb->setDefaultAccessToken($appid.'|'.$secretid);
-			if (handleexceptions($fb, $users, $data)){
-				$notifications = $notifications + 1;
-			}
+	//		$fb->setDefaultAccessToken($appid.'|'.$secretid);
+	//		if (handleexceptions($fb, $users, $data)){
+	//			$notifications = $notifications + 1;
+	//		}
 		}
 	}
-	mtrace("Notifications have been sent succesfully to ".$notifications."people.");
+	mtrace("Notifications have been sent succesfully to ".$notifications." people.");
 	$finaltime = time();
-	mtrace("Execution time: ".$finaltime - $initialtime." seconds.");
+	$totaltime = $finaltime-$initialtime;
+	mtrace("Execution time: ".$totaltime." seconds.");
 }
 exit(0);
