@@ -72,7 +72,7 @@ echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
 $initialtime = time();
 $notifications = 0;
 
-/*
+
 $appid = $CFG->fbk_appid;
 $secretid = $CFG->fbk_scrid;
 
@@ -80,7 +80,7 @@ $fb = new Facebook([
 		"app_id" => $appid,
 		"app_secret" => $secretid,
 		"default_graph_version" => "v2.5"]);
-*/
+
 $queryusers = "SELECT  
 		us.id AS id,
 		fb.facebookid,
@@ -258,10 +258,10 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"message" => "",
 					"template" => $template
 			);	
-	//		$fb->setDefaultAccessToken($appid.'|'.$secretid);
-	//		if (handleexceptions($fb, $users, $data)){
-	//			$notifications = $notifications + 1;
-	//		}
+			$fb->setDefaultAccessToken($appid.'|'.$secretid);
+			if (handleexceptions($fb, $users, $data)){
+				$notifications = $notifications + 1;
+			}
 		}
 	}
 	mtrace("Notifications have been sent succesfully to ".$notifications." people.");
