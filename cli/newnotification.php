@@ -131,9 +131,8 @@ $queryresources = "SELECT cm.id,
 		AND fb.facebookid IS NOT NULL
 		GROUP BY cm.id, us.id";
 
-$querylink = "SELECT url.id,
+$querylink = "SELECT us.id AS userid,
 		COUNT(url.id) AS count,
-		us.id AS userid,
 		fb.facebookid,
 		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
