@@ -84,7 +84,6 @@ $fb = new Facebook([
 $queryusers = "SELECT  
 		us.id AS id,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -96,7 +95,6 @@ $queryusers = "SELECT
 $queryposts = "SELECT us.id AS userid,
 		COUNT(fp.id) AS count,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -108,15 +106,14 @@ $queryposts = "SELECT us.id AS userid,
 		INNER JOIN {user} AS us ON (uen.userid = us.id)
 		
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE fp.modified > fb.lasttimechecked OR fp.modified > us.lastaccess
+		WHERE fp.modified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
-		GROUP BY us.id";//lee el doble... triple? de lo qe deberia...
+		GROUP BY us.id";
 //INNER JOIN mdl_course_modules AS cm ON (cm.instance = forum.id AND cm.visible = 1 AND cm.course = en.courseid) 
 //deleted and it works...
 $queryresources = "SELECT us.id AS userid,
 		COUNT(cm.id) AS count,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -127,14 +124,13 @@ $queryresources = "SELECT us.id AS userid,
 		INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
 		INNER JOIN {user} AS us ON (uen.userid = us.id)
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE r.timemodified > fb.lasttimechecked OR r.timemodified > us.lastaccess
+		WHERE r.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
 $querylink = "SELECT us.id AS userid,
 		COUNT(url.id) AS count,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -145,14 +141,13 @@ $querylink = "SELECT us.id AS userid,
 		INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
 		INNER JOIN {user} AS us ON (uen.userid = us.id)
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE url.timemodified > fb.lasttimechecked OR url.timemodified > us.lastaccess
+		WHERE url.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 		
 $queryemarking = "SELECT us.id AS userid,
 		COUNT(d.id) AS count,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -164,14 +159,13 @@ $queryemarking = "SELECT us.id AS userid,
 		INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course = en.courseid)
 		INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking')
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE d.timemodified > fb.lasttimechecked OR d.timemodified > us.lastaccess
+		WHERE d.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 
 $queryassignments = "SELECT us.id AS userid,
 		COUNT(a.id) AS count,
 		fb.facebookid,
-		us.lastaccess,
 		CONCAT(us.firstname,' ',us.lastname) AS name,
 		fb.lasttimechecked,
 		us.email
@@ -182,7 +176,7 @@ $queryassignments = "SELECT us.id AS userid,
 		INNER JOIN {user} AS us ON (us.id = ue.userid)
 		
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-		WHERE a.timemodified > fb.lasttimechecked OR a.timemodified > us.lastaccess
+		WHERE a.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
 //INNER JOIN {course_modules} AS cm ON (c.id = cm.course AND cm.module = ? AND cm.visible = ?)
