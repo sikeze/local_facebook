@@ -87,3 +87,4 @@ $string['privacypolicies'] = 'Privacy policies';
 $string["notificationcountA"] = "You have ";
 $string["notificationcountsingular"] = " new notification from WebCursos.";
 $string["notificationcountplural"] = " new notifications from WebCursos.";
+$string["tasks_facebook"]="Facebook";
