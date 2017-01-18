@@ -554,14 +554,17 @@ function facebook_handleexceptions($fb, $user, $data){
 	return false;
 	}
 }
-function facebook_addtoarray($query, $params, $array){
+function facebook_addtoarray($query, $params){
 	global $DB;
+	$arraydata = array();
 	if ($facebookusers = $DB->get_records_sql($query, $params)){
 		foreach ($facebookusers as $users){
-			$array[$users->userid] = $users->count;
+			$arraydata[$users->userid] = $users->count;
 		}
-	return $array;
+	}else{
+		mtrace("query mala ");
 	}
+	return $arraydata;
 }
 function facebook_queriesfornotifications(){
 	global $DB;
@@ -635,8 +638,7 @@ function facebook_queriesfornotifications(){
 		INNER JOIN {course} AS c ON (a.course = c.id)
 		INNER JOIN {enrol} AS e ON (c.id = e.courseid)
 		INNER JOIN {user_enrolments} AS ue ON (e.id = ue.enrolid)
-		INNER JOIN {user} AS us ON (us.id = ue.userid)
-	
+		INNER JOIN {user} AS us ON (us.id = ue.userid)	
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE a.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
@@ -662,17 +664,11 @@ function facebook_queriesfornotifications(){
 			FACEBOOK_COURSE_MODULE_VISIBLE
 	);
 	
-	$arraynewposts = array();
-	$arraynewresources = array();
-	$arraynewlinks = array();
-	$arraynewemarkings = array();
-	$arraynewassignments = array();
-	
-	$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
-	$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
-	$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
-	$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
-	$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
+	$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers));
+	$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers));
+	$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers));
+	$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers);
+	$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers));
 	
 	$arrayofnotifications = array(
 			$arraynewposts,
