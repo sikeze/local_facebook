@@ -514,6 +514,7 @@ function cmp($a, $b){
 	return strcmp ($b->totalnotifications, $a->totalnotifications);
 }
 function facebook_newclass(){
+	global $CFG;
 	$appid = $CFG->fbk_appid;
 	$secretid = $CFG->fbk_scrid;
 	
