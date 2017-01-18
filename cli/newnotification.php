@@ -188,7 +188,7 @@ $arraynewlinks = array();
 $arraynewemarkings = array();
 $arraynewassignments = array();
 
-$arraynewposts = facebook_facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
+$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
 $arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
 $arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
 $arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers, $arraynewemarkings);

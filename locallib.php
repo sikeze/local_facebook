@@ -543,7 +543,7 @@ function facebook_handleexceptions($fb, $user, $data){
 	return false;
 	}
 }
-function facebook_facebook_addtoarray($query, $params, $array){
+function facebook_addtoarray($query, $params, $array){
 	global $DB;
 	if ($facebookusers = $DB->get_records_sql($query, $params)){
 		foreach ($facebookusers as $users){
@@ -671,7 +671,7 @@ function facebook_queriesfornotifications(){
 			$arraynewassignments
 	);
 }
-function facebook_queriesforusers(){
+function facebook_getusers(){
 	global $DB;
 	$queryusers = "SELECT
 		us.id AS id,

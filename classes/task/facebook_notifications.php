@@ -48,7 +48,7 @@ class facebook_notifications extends \core\task\scheduled_task {
 		
 		list($posts, $resources, $links, $emarkings, $assignments) = facebook_queriesfornotifications();
 		
-		if ($facebookusers = facebook_queriesforusers()){
+		if ($facebookusers = facebook_getusers()){
 			foreach ($facebookusers as $users){
 				$totalcount = 0;
 				if (isset($posts[$users->id])){
