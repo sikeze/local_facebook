@@ -33,36 +33,62 @@ class facebook_notifications extends \core\task\scheduled_task {
 		return get_string("task_courses", "local_sync");
 	}
 	public function execute(){
+		global $DB, $CFG;
+		require_once($CFG->dirroot."/local/facebook/locallib.php");
+		
+		$initialtime = time();
+		$notifications = 0;
 		$appid = $CFG->fbk_appid;
 		$secretid = $CFG->fbk_scrid;
-		$fb = facebookclass($appid, $secretid);
-		$initialtime = time();
-		$sent = 0;
-
-
-		if($facebokusers = getfacebookusersid()){
-			foreach($facebookusers as $user){
-				$courseidarray = getusercoursesids($users);
-			}
-			if(!empty($courseidarray)){
-				// Use the last time in web or app
-				if($user->lastaccess < $user->lasttimechecked){
-					$user->lastaccess = $user->lasttimechecked;
+		
+		$fb = new Facebook([
+				"app_id" => $appid,
+				"app_secret" => $secretid,
+				"default_graph_version" => "v2.5"]);
+		
+		list($posts, $resources, $links, $emarkings, $assignments) = queriesfornotifications();
+		
+		if ($facebookusers = queriesforusers()){
+			foreach ($facebookusers as $users){
+				$totalcount = 0;
+				if (isset($posts[$users->id])){
+					$totalcount = $totalcount + $posts[$users->id];
 				}
-				$notifications = countnotifications($courseidarray);
-				if ($user->facebookid != null && $notifications != 0) {
-					$data = getarraynotification($notifications);
+				if (isset($resources[$users->id])){
+					$totalcount = $totalcount + $resources[$users->id];
+				}
+				if (isset($links[$users->id])){
+					$totalcount = $totalcount + $links[$users->id];
+				}
+				if (isset($emarkings[$users->id])){
+					$totalcount = $totalcount + $emarkings[$users->id];
+				}
+				if (isset($assignments[$users->id])){
+					$totalcount = $totalcount + $assignments[$users->id];
+				}
+				if ($users->facebookid != null && $totalcount != 0) {
+					if ($totalcount == 1) {
+						$template = get_string("notificationcountA", "local_facebook").$totalcount.get_string("notificationcountsingular", "local_facebook");
+					}
+					else {
+						$template = get_string("notificationcountA", "local_facebook").$totalcount.get_string("notificationcountplural", "local_facebook");
+					}
+					$data = array(
+							"link" => "",
+							"message" => "",
+							"template" => $template
+					);
 					$fb->setDefaultAccessToken($appid.'|'.$secretid);
-					handleexceptions($fb, $user, $data);
-					$sent += $notifications;
+					if (handleexceptions($fb, $users, $data)){
+						mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
+						$notifications = $notifications + 1;
+					}
 				}
 			}
-			print $sent." Notifications sent. \n";
-				
+			mtrace("Notifications have been sent succesfully to ".$notifications." people.");
 			$finaltime = time();
-			$executiontime = $finaltime - $initialtime;
-				
-			mtrace("Execution time: ".$executiontime." seconds. \n");
-		}
-	}
+			$totaltime = $finaltime-$initialtime;
+			mtrace("Execution time: ".$totaltime." seconds.");
+		}	
+	}	
 }

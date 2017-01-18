@@ -84,3 +84,6 @@ $string['firstname'] = 'Nombre';
 $string['email'] = 'Email';
 $string['backtocourse'] = 'Volver al curso';
 $string['privacypolicies'] = 'Politicas de privacidad';
+$string["notificationcountA"] = "Tienes ";
+$string["notificationcountsingular"] = " nueva notificación de WebCursos";
+$string["notificationcountplural"] = " nuevas notificaciones de WebCursos";
