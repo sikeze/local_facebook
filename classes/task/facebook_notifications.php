@@ -44,11 +44,11 @@ class facebook_notifications extends \core\task\scheduled_task {
 		$fb = new Facebook([
 				"app_id" => $appid,
 				"app_secret" => $secretid,
-				"default_graph_version" => "v2.5"]);
+				"default_graph_version" => "v2.8"]);
 		
-		list($posts, $resources, $links, $emarkings, $assignments) = queriesfornotifications();
+		list($posts, $resources, $links, $emarkings, $assignments) = facebook_queriesfornotifications();
 		
-		if ($facebookusers = queriesforusers()){
+		if ($facebookusers = facebook_queriesforusers()){
 			foreach ($facebookusers as $users){
 				$totalcount = 0;
 				if (isset($posts[$users->id])){
@@ -79,7 +79,7 @@ class facebook_notifications extends \core\task\scheduled_task {
 							"template" => $template
 					);
 					$fb->setDefaultAccessToken($appid.'|'.$secretid);
-					if (handleexceptions($fb, $users, $data)){
+					if (facebook_handleexceptions($fb, $users, $data)){
 						mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
 						$notifications = $notifications + 1;
 					}

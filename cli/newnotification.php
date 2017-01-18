@@ -41,7 +41,6 @@ use Facebook\FacebookRequire;
 use Facebook\Facebook;
 use Facebook\Request;
 
-// Now get cli options
 list($options, $unrecognized) = cli_get_params(
 		array('help'=>false),
 		array('h'=>'help')
@@ -50,10 +49,8 @@ if($unrecognized) {
 	$unrecognized = implode("\n  ", $unrecognized);
 	cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
 }
-// Text to the facebook console
 if($options['help']) {
 	$help =
-	// Todo: localize - to be translated later when everything is finished
 	"Send facebook notifications when a course have some news.
 Options:
 -h, --help            Print out this help
@@ -64,7 +61,7 @@ Example:
 }
 
 
-cli_heading('Facebook notifications'); // TODO: localize
+cli_heading('Facebook notifications'); 
 
 echo "\nSearching for new notifications\n";
 echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
@@ -79,7 +76,7 @@ $secretid = $CFG->fbk_scrid;
 $fb = new Facebook([
 		"app_id" => $appid,
 		"app_secret" => $secretid,
-		"default_graph_version" => "v2.5"]);
+		"default_graph_version" => "v2.8"]);
 
 $queryusers = "SELECT  
 		us.id AS id,
@@ -172,17 +169,14 @@ $paramsusers = array(
 $paramspost = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE
 );
-
 $paramsresource = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE,
 		'resource'
 );
-	
 $paramslink = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE,
 		'url'
 );
-	
 $paramsassignment = array(
 		MODULE_ASSIGN,
 		FACEBOOK_COURSE_MODULE_VISIBLE
@@ -194,11 +188,11 @@ $arraynewlinks = array();
 $arraynewemarkings = array();
 $arraynewassignments = array();
 
-$arraynewposts = addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
-$arraynewresources = addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
-$arraynewlinks = addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
-$arraynewemarkings = addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
-$arraynewassignments = addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
+$arraynewposts = facebook_facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
+$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
+$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
+$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
+$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
 
 if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 	foreach ($facebookusers as $users){
@@ -230,9 +224,8 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"message" => "",
 					"template" => $template
 			);	
-			var_dump($data);
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
-			if (handleexceptions($fb, $users, $data)){
+			if (facebook_handleexceptions($fb, $users, $data)){
 				mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
 				$notifications = $notifications + 1;
 			}

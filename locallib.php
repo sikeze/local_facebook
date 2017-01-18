@@ -514,179 +514,7 @@ function cmp($a, $b){
 	return strcmp ($b->totalnotifications, $a->totalnotifications);
 }
 
-function facebookclass($appid, $secretid){
-	global $CFG;
-	require_once(dirname(dirname(dirname(dirname(__FILE__)))).'/config.php');
-	require_once ($CFG->libdir . '/clilib.php');
-	require_once($CFG->dirroot."/local/facebook/app/Facebook/autoload.php");
-	require_once($CFG->dirroot."/local/facebook/app/Facebook/FacebookRequest.php");
-	include $CFG->dirroot."/local/facebook/app/Facebook/Facebook.php";
-/*	use Facebook\FacebookResponse;
-	use Facebook\FacebookRedirectLoginHelper;
-	use Facebook\FacebookRequire;
-	use Facebook\Facebook;
-	use Facebook\Request;*/
-	$fb = new Facebook([
-			"app_id" => $appid,
-			"app_secret" => $secretid,
-			"default_graph_version" => "v2.5"]);
-	return $fb;	
-}/*
-function getfacebookusersid(){
-	global $DB;
-	$sqlusers = "SELECT  u.id AS id,
-			f.facebookid,
-			u.lastaccess,
-			CONCAT(u.firstname,' ',u.lastname) AS name,
-			f.lasttimechecked,
-			u.email
-			FROM {facebook_user} AS f  RIGHT JOIN {user} AS u ON (u.id = f.moodleid AND f.status = ?)
-			WHERE f.facebookid IS NOT NULL
-			GROUP BY f.facebookid, u.id";
-	$facebookusers = $DB->get_records_sql($sqlusers, array(FACEBOOK_LINKED)) && $CFG->fbk_notifications;
-	return $facebookusers;
-}
-function getusercoursesids($users){
-	$courses = enrol_get_users_courses($user->id);
-	$courseidarray = array();
-
-	// Save all courses ids in an array
-	foreach ($courses as $course){
-		$courseidarray[] = $course->id;
-	}
-	return $courseidarray;
-}
-function countnotifications($courseidarray){
-			global $CFG, $DB;
-			
-			list($sqlincourses, $paramcourses) = $DB->get_in_or_equal($courseidarray);
-				
-			// Parameters for post query
-			$paramspost = array_merge($paramcourses, array(
-					FACEBOOK_COURSE_MODULE_VISIBLE,
-					$user->lastaccess
-			));
-				
-			// Query for the posts information
-			$datapostsql = "SELECT COUNT(data.id) AS count
-			FROM (
-			SELECT fp.id AS id
-			FROM {forum_posts} AS fp
-			INNER JOIN {forum_discussions} AS discussions ON (fp.discussion = discussions.id AND discussions.course $sqlincourses)
-			INNER JOIN {forum} AS forum ON (forum.id = discussions.forum)
-			INNER JOIN {user} AS us ON (us.id = fp.userid)
-			INNER JOIN {course_modules} AS cm ON (cm.instance = forum.id AND cm.visible = ?)
-			WHERE fp.modified > ?
-			GROUP BY fp.id)
-			AS data";
-				
-			// Parameters for resource query
-			$paramsresource = array_merge($paramcourses, array(
-					FACEBOOK_COURSE_MODULE_VISIBLE,
-					'resource',
-					$user->lastaccess
-			));
-				
-			// Query for the resource information
-			$dataresourcesql = "SELECT COUNT(data.id) AS count
-			FROM (
-			SELECT cm.id AS id
-			FROM {resource} AS r
-			INNER JOIN {course_modules} AS cm ON (cm.instance = r.id AND cm.course $sqlincourses AND cm.visible = ?)
-			INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
-			WHERE r.timemodified > ?
-			GROUP BY cm.id)
-			AS data";
-				
-			// Parameters for the link query
-			$paramslink = array_merge($paramcourses, array(
-					FACEBOOK_COURSE_MODULE_VISIBLE,
-					'url',
-					$user->lastaccess
-			));
-				
-			//query for the link information
-			$datalinksql="SELECT COUNT(data.id) AS count
-			FROM (
-			SELECT url.id AS id
-			FROM {url} AS url
-			INNER JOIN {course_modules} AS cm ON (cm.instance = url.id AND cm.course $sqlincourses AND cm.visible = ?)
-			INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
-			WHERE url.timemodified > ?
-			GROUP BY url.id)
-			AS data";
-				
-			//$emarkingparams = $param;
-			$paramsemarking = array_merge(
-					array(
-							$user->lastaccess,
-							$user->id
-					),
-					$paramcourses
-					);
-				
-			// Query for getting eMarkings by course
-			$dataemarkingsql= "SELECT COUNT(data.id) AS count
-			FROM (
-			SELECT d.id AS id
-			FROM {emarking_draft} AS d JOIN {emarking} AS e ON (e.id = d.emarkingid AND e.type in (1,5,0) AND d.timemodified > ?)
-			INNER JOIN {emarking_submission} AS s ON (d.submissionid = s.id AND d.status IN (20,30,35,40) AND s.student = ?)
-			INNER JOIN {user} AS u ON (u.id = s.student)
-			INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course $sqlincourses)
-			INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking'))
-			AS data";
-				
-			$paramsassignment = array_merge($paramcourses, array(
-					$user->id,
-					MODULE_ASSIGN,
-					FACEBOOK_COURSE_MODULE_VISIBLE,
-					$user->lastaccess
-			));
-				
-			$dataassignmentsql = "SELECT COUNT(data.id) AS count
-			FROM (
-			SELECT a.id AS id
-			FROM {assign} AS a
-			INNER JOIN {course} AS c ON (a.course = c.id AND c.id $sqlincourses)
-			INNER JOIN {enrol} AS e ON (c.id = e.courseid)
-			INNER JOIN {user_enrolments} AS ue ON (e.id = ue.enrolid AND ue.userid = ?)
-			INNER JOIN {course_modules} AS cm ON (c.id = cm.course AND cm.module = ? AND cm.visible = ?)
-			INNER JOIN {assign_submission} AS s ON (a.id = s.assignment)
-			WHERE a.timemodified > ?
-			GROUP BY a.id)
-			AS data";
-			$notifications = 0;
-			if($resources = $DB->get_record_sql($dataresourcesql, $paramsresource)){
-				$notifications += $resources->count;
-			}
-			if($urls = $DB->get_record_sql($datalinksql, $paramslink)){
-				$notifications += $urls->count;
-			}
-			if($posts = $DB->get_record_sql($datapostsql, $paramspost)){
-				$notifications += $posts->count;
-			}
-			if($emarkings = $DB->get_record_sql($dataemarkingsql, $paramsemarking) && $CFG->fbk_emarking ){
-				$notifications += $emarkings->count;
-			}
-			if($assigns = $DB->get_record_sql($dataassignmentsql, $paramsassignment)){
-				$notifications += $assigns->count;
-			}
-			return $notifications;
-}
-function getarraynotification($notifications){
-	if ($notifications == 1) {
-		$template = "Tienes $notifications notificación de Webcursos.";
-	} else {
-		$template = "Tienes $notifications notificaciones de Webcursos.";
-	}
-	$data = array(
-			"link" => "",
-			"message" => "",
-			"template" => $template
-	);
-	return $data;
-}*/
-function handleexceptions($fb, $user, $data){
+function facebook_handleexceptions($fb, $user, $data){
 	global $DB;
 	
 	try {
@@ -715,7 +543,7 @@ function handleexceptions($fb, $user, $data){
 	return false;
 	}
 }
-function addtoarray($query, $params, $array){
+function facebook_facebook_addtoarray($query, $params, $array){
 	global $DB;
 	if ($facebookusers = $DB->get_records_sql($query, $params)){
 		foreach ($facebookusers as $users){
@@ -724,7 +552,7 @@ function addtoarray($query, $params, $array){
 	return $array;
 	}
 }
-function queriesfornotifications(){
+function facebook_queriesfornotifications(){
 	global $DB;
 	
 	$queryposts = "SELECT us.id AS userid,
@@ -813,13 +641,11 @@ function queriesfornotifications(){
 	$paramsresource = array(
 			FACEBOOK_COURSE_MODULE_VISIBLE,
 			'resource'
-	);
-	
+	);	
 	$paramslink = array(
 			FACEBOOK_COURSE_MODULE_VISIBLE,
 			'url'
 	);
-	
 	$paramsassignment = array(
 			MODULE_ASSIGN,
 			FACEBOOK_COURSE_MODULE_VISIBLE
@@ -831,11 +657,11 @@ function queriesfornotifications(){
 	$arraynewemarkings = array();
 	$arraynewassignments = array();
 	
-	$arraynewposts = addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
-	$arraynewresources = addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
-	$arraynewlinks = addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
-	$arraynewemarkings = addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
-	$arraynewassignments = addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
+	$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
+	$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
+	$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
+	$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
+	$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
 	
 	$arrayofnotifications = array(
 			$arraynewposts,
@@ -845,7 +671,7 @@ function queriesfornotifications(){
 			$arraynewassignments
 	);
 }
-function queriesforusers(){
+function facebook_queriesforusers(){
 	global $DB;
 	$queryusers = "SELECT
 		us.id AS id,
