@@ -561,8 +561,6 @@ function facebook_addtoarray($query, $params){
 		foreach ($facebookusers as $users){
 			$arraydata[$users->userid] = $users->count;
 		}
-	}else{
-		mtrace("query mala ");
 	}
 	return $arraydata;
 }
@@ -664,18 +662,12 @@ function facebook_queriesfornotifications(){
 			FACEBOOK_COURSE_MODULE_VISIBLE
 	);
 	
-	$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers));
-	$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers));
-	$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers));
-	$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers);
-	$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers));
-	
-	$arrayofnotifications = array(
-			$arraynewposts,
-			$arraynewresources,
-			$arraynewlinks,
-			$arraynewemarkings,
-			$arraynewassignments
+	return array(
+			facebook_addtoarray($queryposts, $paramsusers),
+			facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers)),
+			facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers)),
+			facebook_addtoarray($queryemarking, $paramsusers),
+			facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers))
 	);
 }
 function facebook_getusers(){
