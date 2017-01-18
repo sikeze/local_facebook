@@ -515,13 +515,14 @@ function cmp($a, $b){
 }
 function facebook_newclass(){
 	global $CFG;
-	$appid = $CFG->fbk_appid;
-	$secretid = $CFG->fbk_scrid;
+	require_once($CFG->dirroot."/local/facebook/app/Facebook/autoload.php");
+	require_once($CFG->dirroot."/local/facebook/app/Facebook/FacebookRequest.php");
 	
 	$fb = new Facebook([
-			"app_id" => $appid,
-			"app_secret" => $secretid,
+			"app_id" => $CFG->fbk_appid,
+			"app_secret" => $CFG->fbk_scrid,
 			"default_graph_version" => "v2.8"]);
+	
 	return $fb;
 }
 function facebook_handleexceptions($fb, $user, $data){
