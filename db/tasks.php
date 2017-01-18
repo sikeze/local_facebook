@@ -13,19 +13,22 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-
 /**
- * Defines the version of emarking
- *
- * @package    local
- * @subpackage facebook
- * @copyright  2013 Francisco García Ralph (francisco.garcia.ralph@gmail.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
-defined('MOODLE_INTERNAL') || die();
-$plugin->pluginname = "local_facebook";
-$plugin->component = 'local_facebook';
-$plugin->version   = 2017011802;
+*
+*
+* @package    local
+* @subpackage facebook
+* @copyright  2016 Hans Jeria <hansjeria@gmail.com>
+* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+*/
+$tasks = array(
+	array(
+			'classname' => 'local_facebook\task\facebook_notifications',
+			'blocking' => 0,
+			'minute' => 0,
+			'hour' => '2,8,14,20',
+			'day' => '*',
+			'dayofweek' => '*',
+			'month' => '*'
+	)
+);
