@@ -41,7 +41,6 @@ use Facebook\FacebookRequire;
 use Facebook\Facebook;
 use Facebook\Request;
 
-// Now get cli options
 list($options, $unrecognized) = cli_get_params(
 		array('help'=>false),
 		array('h'=>'help')
@@ -50,10 +49,8 @@ if($unrecognized) {
 	$unrecognized = implode("\n  ", $unrecognized);
 	cli_error(get_string('cliunknowoption', 'admin', $unrecognized));
 }
-// Text to the facebook console
 if($options['help']) {
 	$help =
-	// Todo: localize - to be translated later when everything is finished
 	"Send facebook notifications when a course have some news.
 Options:
 -h, --help            Print out this help
@@ -64,7 +61,7 @@ Example:
 }
 
 
-cli_heading('Facebook notifications'); // TODO: localize
+cli_heading('Facebook notifications'); 
 
 echo "\nSearching for new notifications\n";
 echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
@@ -79,14 +76,12 @@ $secretid = $CFG->fbk_scrid;
 $fb = new Facebook([
 		"app_id" => $appid,
 		"app_secret" => $secretid,
-		"default_graph_version" => "v2.5"]);
+		"default_graph_version" => "v2.8"]);
 
 $queryusers = "SELECT  
 		us.id AS id,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {facebook_user} AS fb
 		RIGHT JOIN {user} AS us ON (us.id = fb.moodleid AND fb.status = ?)
 		WHERE fb.facebookid IS NOT NULL
@@ -95,28 +90,22 @@ $queryusers = "SELECT
 $queryposts = "SELECT us.id AS userid,
 		COUNT(fp.id) AS count,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {enrol} AS en
 		INNER JOIN {user_enrolments} AS uen ON (en.id = uen.enrolid)
 		INNER JOIN {forum_discussions} AS discussions ON (en.courseid = discussions.course)
 		INNER JOIN {forum_posts} AS fp ON (fp.discussion = discussions.id)
 		INNER JOIN {forum} AS forum ON (forum.id = discussions.forum)
 		INNER JOIN {user} AS us ON (uen.userid = us.id)
-		
 		INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 		WHERE fp.modified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
-//INNER JOIN mdl_course_modules AS cm ON (cm.instance = forum.id AND cm.visible = 1 AND cm.course = en.courseid) 
-//deleted and it works...
+
 $queryresources = "SELECT us.id AS userid,
 		COUNT(cm.id) AS count,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {enrol} AS en
 		INNER JOIN {user_enrolments} AS uen ON (en.id = uen.enrolid)
 		INNER JOIN {course_modules} AS cm ON (en.courseid = cm.course AND cm.visible = ?)
@@ -131,9 +120,7 @@ $queryresources = "SELECT us.id AS userid,
 $querylink = "SELECT us.id AS userid,
 		COUNT(url.id) AS count,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {enrol} AS en
 		INNER JOIN {user_enrolments} AS uen ON (en.id = uen.enrolid)
 		INNER JOIN {course_modules} AS cm ON (en.courseid = cm.course AND cm.visible = ?)
@@ -148,9 +135,7 @@ $querylink = "SELECT us.id AS userid,
 $queryemarking = "SELECT us.id AS userid,
 		COUNT(d.id) AS count,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {emarking_draft} AS d JOIN {emarking} AS e ON (e.id = d.emarkingid AND e.type in (1,5,0))
 		INNER JOIN {emarking_submission} AS s ON (d.submissionid = s.id AND d.status IN (20,30,35,40))
 		INNER JOIN {user} AS us ON (s.student = us.id)
@@ -166,9 +151,7 @@ $queryemarking = "SELECT us.id AS userid,
 $queryassignments = "SELECT us.id AS userid,
 		COUNT(a.id) AS count,
 		fb.facebookid,
-		CONCAT(us.firstname,' ',us.lastname) AS name,
-		fb.lasttimechecked,
-		us.email
+		CONCAT(us.firstname,' ',us.lastname) AS name
 		FROM {assign} AS a
 		INNER JOIN {course} AS c ON (a.course = c.id)
 		INNER JOIN {enrol} AS e ON (c.id = e.courseid)
@@ -179,7 +162,6 @@ $queryassignments = "SELECT us.id AS userid,
 		WHERE a.timemodified > fb.lasttimechecked
 		AND fb.facebookid IS NOT NULL
 		GROUP BY us.id";
-//INNER JOIN {course_modules} AS cm ON (c.id = cm.course AND cm.module = ? AND cm.visible = ?)
 
 $paramsusers = array(
 		FACEBOOK_LINKED
@@ -187,17 +169,14 @@ $paramsusers = array(
 $paramspost = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE
 );
-
 $paramsresource = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE,
 		'resource'
 );
-	
 $paramslink = array(
 		FACEBOOK_COURSE_MODULE_VISIBLE,
 		'url'
 );
-	
 $paramsassignment = array(
 		MODULE_ASSIGN,
 		FACEBOOK_COURSE_MODULE_VISIBLE
@@ -209,43 +188,36 @@ $arraynewlinks = array();
 $arraynewemarkings = array();
 $arraynewassignments = array();
 
-$arraynewposts = addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
-$arraynewresources = addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
-$arraynewlinks = addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
-$arraynewemarkings = addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
-$arraynewassignments = addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
+$arraynewposts = facebook_addtoarray($queryposts, array_merge($paramspost, $paramsusers), $arraynewposts);
+$arraynewresources = facebook_addtoarray($queryresources, array_merge($paramsresource, $paramsusers), $arraynewresources);
+$arraynewlinks = facebook_addtoarray($querylink, array_merge($paramslink, $paramsusers), $arraynewlinks);
+$arraynewemarkings = facebook_addtoarray($queryemarking, $paramsusers, $arraynewemarkings);
+$arraynewassignments = facebook_addtoarray($queryassignments, array_merge($paramsassignment, $paramsusers), $arraynewassignments);
 
 if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 	foreach ($facebookusers as $users){
 		$totalcount = 0;
 		if (isset($arraynewposts[$users->id])){
 			$totalcount = $totalcount + $arraynewposts[$users->id];
-			mtrace($arraynewposts[$users->id]." notifications have been found in posts for user ".$users->id."\n");
 		}
 		if (isset($arraynewresources[$users->id])){
 			$totalcount = $totalcount + $arraynewresources[$users->id];
-			mtrace($arraynewresources[$users->id]." notifications have been found in resources for user ".$users->id."\n");
 		}
 		if (isset($arraynewlinks[$users->id])){
 			$totalcount = $totalcount + $arraynewlinks[$users->id];
-			mtrace($arraynewlinks[$users->id]." notifications have been found in links for user ".$users->id."\n");
 		}
 		if (isset($arraynewemarkings[$users->id])){
 			$totalcount = $totalcount + $arraynewemarkings[$users->id];
-			mtrace($arraynewemarkings[$users->id]." notifications have been found in emarkings for user ".$users->id."\n");
 		}
 		if (isset($arraynewassignments[$users->id])){
 			$totalcount = $totalcount + $arraynewassignments[$users->id];
-			mtrace($arraynewassignments[$users->id]." notifications have been found in assignments for user ".$users->id."\n");
 		}
-		mtrace("A total of ".$totalcount." notifications have been found for user ".$users->id."\n");
-		mtrace("--------------------------------------------------------------------------------------------------");
 		if ($users->facebookid != null && $totalcount != 0) {
 			if ($totalcount == 1) {
-				$template = "Tienes $totalcount notificación de Webcursos.";
+				$template = get_string("notificationcountA", "local_facebook").$totalcount.get_string("notificationcountsingular", "local_facebook");
 			}
 			else {
-				$template = "Tienes $totalcount notificaciones de Webcursos.";
+				$template = get_string("notificationcountA", "local_facebook").$totalcount.get_string("notificationcountplural", "local_facebook");
 			}
 			$data = array(
 					"link" => "",
@@ -253,7 +225,8 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 					"template" => $template
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
-			if (handleexceptions($fb, $users, $data)){
+			if (facebook_handleexceptions($fb, $users, $data)){
+				mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
 				$notifications = $notifications + 1;
 			}
 		}
