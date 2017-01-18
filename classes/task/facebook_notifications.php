@@ -49,18 +49,18 @@ class facebook_notifications extends \core\task\scheduled_task {
 					$totalcount = $totalcount + $posts[$users->id];
 				}
 				if (isset($resources[$users->id])){
-					$totalcount = $totalcount + $resources[$users->id];
+					$totalcount += $resources[$users->id];
 				}
 				if (isset($links[$users->id])){
-					$totalcount = $totalcount + $links[$users->id];
+					$totalcount += $links[$users->id];
 				}
 				if (isset($emarkings[$users->id])){
-					$totalcount = $totalcount + $emarkings[$users->id];
+					$totalcount += $emarkings[$users->id];
 				}
 				if (isset($assignments[$users->id])){
-					$totalcount = $totalcount + $assignments[$users->id];
+					$totalcount += $assignments[$users->id];
 				}
-				if ($users->facebookid != null && $totalcount != 0) {
+				if ($users->facebookid != null && $totalcount > 0) {
 					if ($totalcount == 1) {
 						$template = get_string("notificationcountA", "local_facebook").$totalcount.get_string("notificationcountsingular", "local_facebook");
 					}
@@ -77,6 +77,8 @@ class facebook_notifications extends \core\task\scheduled_task {
 						mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
 						$notifications = $notifications + 1;
 					}
+				}else{
+					mtrace("No entra IF, Usuario ".$users->name." número ".$totalcount);
 				}
 			}
 			mtrace("Notifications have been sent succesfully to ".$notifications." people.");
