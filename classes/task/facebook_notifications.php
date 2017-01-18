@@ -41,12 +41,12 @@ class facebook_notifications extends \core\task\scheduled_task {
 		$fb = facebook_newclass();
 		
 		list($posts, $resources, $links, $emarkings, $assignments) = facebook_queriesfornotifications();
-		
+		var_dump($posts);
 		if ($facebookusers = facebook_getusers()){
 			foreach ($facebookusers as $users){
 				$totalcount = 0;
 				if (isset($posts[$users->id])){
-					$totalcount = $totalcount + $posts[$users->id];
+					$totalcount += $posts[$users->id];
 				}
 				if (isset($resources[$users->id])){
 					$totalcount += $resources[$users->id];
