@@ -513,7 +513,17 @@ function get_posts_from_discussion($discussionid) {
 function cmp($a, $b){
 	return strcmp ($b->totalnotifications, $a->totalnotifications);
 }
-
+function facebook_newclass(){
+	global $CFG;
+	$appid = $CFG->fbk_appid;
+	$secretid = $CFG->fbk_scrid;
+	
+	$fb = new Facebook([
+			"app_id" => $appid,
+			"app_secret" => $secretid,
+			"default_graph_version" => "v2.8"]);
+	return $fb;
+}
 function facebook_handleexceptions($fb, $user, $data){
 	global $DB;
 	

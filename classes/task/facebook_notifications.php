@@ -30,7 +30,7 @@ namespace local_facebook\task;
 
 class facebook_notifications extends \core\task\scheduled_task {
 	public function get_name() {
-		return get_string("task_courses", "local_sync");
+		return get_string("task_facebook", "local_facebook");
 	}
 	public function execute(){
 		global $DB, $CFG;
@@ -38,13 +38,7 @@ class facebook_notifications extends \core\task\scheduled_task {
 		
 		$initialtime = time();
 		$notifications = 0;
-		$appid = $CFG->fbk_appid;
-		$secretid = $CFG->fbk_scrid;
-		
-		$fb = new \Facebook([
-				"app_id" => $appid,
-				"app_secret" => $secretid,
-				"default_graph_version" => "v2.8"]);
+		$fb = facebook_newclass();
 		
 		list($posts, $resources, $links, $emarkings, $assignments) = facebook_queriesfornotifications();
 		
