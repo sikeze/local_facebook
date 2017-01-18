@@ -41,7 +41,7 @@ class facebook_notifications extends \core\task\scheduled_task {
 		$fb = facebook_newclass();
 		
 		list($posts, $resources, $links, $emarkings, $assignments) = facebook_queriesfornotifications();
-		var_dump($posts);
+
 		if ($facebookusers = facebook_getusers()){
 			foreach ($facebookusers as $users){
 				$totalcount = 0;
@@ -72,13 +72,11 @@ class facebook_notifications extends \core\task\scheduled_task {
 							"message" => "",
 							"template" => $template
 					);
-					$fb->setDefaultAccessToken($appid.'|'.$secretid);
+					$fb->setDefaultAccessToken($CFG->fbk_appid.'|'.$CFG->fbk_scrid);
 					if (facebook_handleexceptions($fb, $users, $data)){
 						mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name);
 						$notifications = $notifications + 1;
 					}
-				}else{
-					mtrace("No entra IF, Usuario ".$users->name." número ".$totalcount);
 				}
 			}
 			mtrace("Notifications have been sent succesfully to ".$notifications." people.");

@@ -69,7 +69,6 @@ echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
 $initialtime = time();
 $notifications = 0;
 
-
 $appid = $CFG->fbk_appid;
 $secretid = $CFG->fbk_scrid;
 
