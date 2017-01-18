@@ -30,7 +30,7 @@ namespace local_facebook\task;
 
 class facebook_notifications extends \core\task\scheduled_task {
 	public function get_name() {
-		return get_string("task_facebook", "local_facebook");
+		return get_string("tasks_facebook", "local_facebook");
 	}
 	public function execute(){
 		global $DB, $CFG;
