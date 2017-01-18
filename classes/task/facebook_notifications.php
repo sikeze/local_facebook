@@ -41,7 +41,7 @@ class facebook_notifications extends \core\task\scheduled_task {
 		$appid = $CFG->fbk_appid;
 		$secretid = $CFG->fbk_scrid;
 		
-		$fb = new Facebook([
+		$fb = new \Facebook([
 				"app_id" => $appid,
 				"app_secret" => $secretid,
 				"default_graph_version" => "v2.8"]);
