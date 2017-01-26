@@ -20,7 +20,8 @@
  *
  * @package    local
  * @subpackage facebook
- * @copyright  2013 Francisco García Ralph (francisco.garcia.ralph@gmail.com)
+ * @copyright  2013 Francisco GarcÃ­a Ralph (francisco.garcia.ralph@gmail.com)
+ * @copyright  2017 Joaquin Rivano (jrivano@alumnos.uai.cl)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 $string['messageprovider:notification'] = 'Notification of resources (pdf, excel, word, url, etc)';
@@ -49,7 +50,7 @@ $string['rowfrom'] = 'From';
 $string['rowdate'] = 'Date';
 $string['conditiontittle'] = 'This aplication is not ready.';
 $string['conditiontext'] = 'We are making some testing you will recibe more information soon';
-$string['existtittle'] = 'Debes enlazar tu cuenta antes de poder usar la aplicación!!';
+$string['existtittle'] = 'Debes enlazar tu cuenta antes de poder usar la aplicaciÃ³n!!';
 $string['existtext'] = 'For disconnect you account go to ';
 $string['existlink'] = 'Here';
 $string['courses'] = 'My courses';
@@ -88,3 +89,77 @@ $string["notificationcountA"] = "You have ";
 $string["notificationcountsingular"] = " new notification from WebCursos.";
 $string["notificationcountplural"] = " new notifications from WebCursos.";
 $string["tasks_facebook"]="Sending notifications to Facebook";
+$string['sunday']="Sunday";
+$string['monday']="Monday";
+$string['tuesday']="Tuesday";
+$string['wednesday']="Wednesday";
+$string['thursday']="Thursday";
+$string['friday']="Friday";
+$string['saturday']="Saturday";
+$string['january']="january";
+$string['february']="february";
+$string['march']="march";
+$string['april']="april";
+$string['may']="may";
+$string['june']="june";
+$string['july']="july";
+$string['august']="august";
+$string['september']="september";
+$string['october']="october";
+$string['november']="november";
+$string['december']="december";
+$string['sunday']="Domingo";
+$string['monday']="Lunes";
+$string['tuesday']="Martes";
+$string['wednesday']="Miercoles";
+$string['thursday']="Jueves";
+$string['friday']="Viernes";
+$string['saturday']="Sabado";
+$string['january']="enero";
+$string['february']="febrero";
+$string['march']="marzo";
+$string['april']="abril";
+$string['may']="mayo";
+$string['june']="junio";
+$string['july']="julio";
+$string['august']="agosto";
+$string['september']="septiembre";
+$string['october']="octubre";
+$string['november']="noviembre";
+$string['december']="diciembre";
+$string['of']=" of ";
+$string['from']=" from ";
+
+//Lang settings paneles
+$string['card1icon']="Icon first panel";
+$string['card1icondesc']="Here is defined the icon that will be displayed in the first panel, to find more options of icons enter to https://material.io/icons/";
+$string['card1title']="Title First panel";
+$string['card1titledesc']="Here it is defined what will be the title of the first panel";
+$string['card1text']="Text first panel";
+$string['card1textdesc']="Here it is defined what will be the text inside the first panel";
+$string['card1link']="Link for more information first panel";
+$string['card1linkdesc']="Here it is defined which will be the link that redirects the first panel";
+$string['card2icon']="Icon second panel";
+$string['card2icondesc']="Here is defined the icon that will be displayed in the second panel, to find more options of icons enter to https://material.io/icons/";
+$string['card2title']="Title second panel";
+$string['card2titledesc']="Here it is defined what will be the title of the second panel";
+$string['card2text']="Text second panel";
+$string['card2textdesc']="Here it is defined what will be the text inside the second panel";
+$string['card2link']="Link for more information second panel";
+$string['card2linkdesc']="Here it is defined which will be the link that redirects the second panel";
+$string['card3icon']="Icon third panel";
+$string['card3icondesc']="Here is defined the icon that will be displayed in the third panel, to find more options of icons enter to https://material.io/icons/";
+$string['card3title']="Title third panel";
+$string['card3titledesc']="Here it is defined what will be the title of the third panel";
+$string['card3text']="Text third panel";
+$string['card3textdesc']="Here it is defined what will be the text inside the second panel";
+$string['card3link']="Link for more information third panel";
+$string['card3linkdesc']="Here it is defined which will be the link that redirects the third panel";
+$string['card4icon']="Icon fourth panel";
+$string['card4icondesc']="Here is defined the icon that will be displayed in the fourth panel, to find more options of icons enter to https://material.io/icons/";
+$string['card4title']="Title fourth panel";
+$string['card4titledesc']="Here it is defined what will be the title of the fourth panel";
+$string['card4text']="Text fourth panel";
+$string['card4textdesc']="Here it is defined what will be the text inside the second panel";
+$string['card4link']="Link for more information fourth panel";
+$string['card4linkdesc']="Here it is defined which will be the link that redirects the fourth panel";
