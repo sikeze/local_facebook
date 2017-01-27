@@ -21,6 +21,7 @@
  * @package    local
  * @subpackage facebook
  * @copyright  2016 Hans Jeria (hansjeria@gmail.com)
+ * @copyright  2017 Joaquin Rivano (joaquin.rivano@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -87,6 +88,170 @@ if ($hassiteconfig) {
 			)
 	);
 
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card1icon',
+					get_string("card1icon","local_facebook"),
+					get_string("card1icondesc","local_facebook"),
+					"record_voice_over",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card1title',
+					get_string("card1title","local_facebook"),
+					get_string("card1titledesc","local_facebook"),
+					"WEBCURSOS INFORMA",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card1text',
+					get_string("card1text","local_facebook"),
+					get_string("card1textdesc","local_facebook"),
+					"Desde los primeros meses de este año, hemos
+					desarrollado una nueva interfaz para el uso de
+					la comunidad UAI. SÃ³lo cambiamos el look, pero
+					continuamos con la misma metodologÃ­a.",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card1link',
+					get_string("card1link","local_facebook"),
+					get_string("card1linkdesc","local_facebook"),
+					"WEBCURSOS INFORMA",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card2icon',
+					get_string("card2icon","local_facebook"),
+					get_string("card2icondesc","local_facebook"),
+					"date_range",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card2title',
+					get_string("card2title","local_facebook"),
+					get_string("card2titledesc","local_facebook"),
+					"CALENDARIOS UAI",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card2text',
+					get_string("card2text","local_facebook"),
+					get_string("card2textdesc","local_facebook"),
+					"Encuentra y revisa las planificaciones.2017 que
+					tiene la UAI para cada uno de los integrantes de
+					nuestra comunidad. Profesores, docentes y administrativos,
+					pueden ingresar al curso y revisar la calendarizaciÃ³n 2017",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card2link',
+					get_string("card2link","local_facebook"),
+					get_string("card2linkdesc","local_facebook"),
+					"WEBCURSOS INFORMA",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card3icon',
+					get_string("card3icon","local_facebook"),
+					get_string("card3icondesc","local_facebook"),
+					"question_answer",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card3title',
+					get_string("card3title","local_facebook"),
+					get_string("card3titledesc","local_facebook"),
+					"SUPPORT",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card3text',
+					get_string("card3text","local_facebook"),
+					get_string("card3textdesc","local_facebook"),
+					"Contrary to popular belief, Lorem Ipsum is not simply",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card3link',
+					get_string("card3link","local_facebook"),
+					get_string("card3linkdesc","local_facebook"),
+					"WEBCURSOS INFORMA",
+					PARAM_TEXT
+					)
+			);
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card4icon',
+					get_string("card4icon","local_facebook"),
+					get_string("card4icondesc","local_facebook"),
+					"help",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card4title',
+					get_string("card4title","local_facebook"),
+					get_string("card4titledesc","local_facebook"),
+					"WE GIVE YOU ANSWERE",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card4text',
+					get_string("card4text","local_facebook"),
+					get_string("card4textdesc","local_facebook"),
+					"Contrary to popular belief, Lorem Ipsum is not simply",
+					PARAM_TEXT
+					)
+			);
+	
+	$settings->add(
+			new admin_setting_configtext(
+					'fbk_card4link',
+					get_string("card4link","local_facebook"),
+					get_string("card4linkdesc","local_facebook"),
+					"WEBCURSOS INFORMA",
+					PARAM_TEXT
+					)
+			);
 	// Advanced Settings
 	$settings->add(
 			new admin_setting_heading(

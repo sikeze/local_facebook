@@ -21,6 +21,7 @@
  * @copyright  2015-2016 Hans Jeria (hansjeria@gmail.com)
  * @copyright  2016 Mark Michaelsen (mmichaelsen678@gmail.com)
  * @copyright  2017 Javier Gonzalez (javiergonzalez@alumnos.uai.cl)
+ * @copyright  2017 Joaquin Rivano (joaquin.rivano@alumnos.uai.cl)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -62,133 +63,188 @@ use Facebook\FacebookRequire;
 use Facebook\Facebook;
 use Facebook\Request;
 
-function get_total_notification($sqlin, $param, $lastvisit, $moodleid){
+function get_total_notification($moodleid){
 	global  $DB, $CFG;
-	
+
 	//sql that counts all the new of recently modified resources
 	$totalresourceparams = array(
-			'resource',
 			FACEBOOK_COURSE_MODULE_VISIBLE,
+			'resource',
 			FACEBOOK_MODULE_VISIBLE,
-			$lastvisit
+			$moodleid
 	);
-	// Merge with the params that the function brings
-	$paramsresource = array_merge($param,$totalresourceparams);
-	
+
 	// Sql that counts all the resourses since the last time the app was used
-	$totalresourcesql = "SELECT cm.course AS idcoursecm, COUNT(cm.module) AS countallresource
-			     FROM {course_modules} AS cm
-			     INNER JOIN {modules} AS m ON (cm.module = m.id)
-	     		 INNER JOIN {resource} AS r ON (cm.instance=r.id)
-			     WHERE cm.course $sqlin 
-			     AND m.name IN (?)
-  			     AND cm.visible = ?
- 			     AND m.visible = ?
-			     AND  r.timemodified >= ?
-			     GROUP BY cm.course";
-	// Gets the information of the above query
-	$totalresource = $DB->get_records_sql($totalresourcesql, $paramsresource);
-	
+	$totalresourcesql = "SELECT cm.course AS idcoursecm,
+						COUNT(cm.id) AS countallresource,
+						fb.facebookid
+						FROM {enrol} AS en
+						INNER JOIN {user_enrolments} AS uen ON (en.id = uen.enrolid)
+						INNER JOIN {course_modules} AS cm ON (en.courseid = cm.course AND cm.visible = ?)
+						INNER JOIN {resource} AS r ON (cm.instance = r.id )
+						INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
+						INNER JOIN {user} AS us ON (uen.userid = us.id)
+						INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+						WHERE r.timemodified > fb.lasttimechecked
+						AND fb.facebookid IS NOT NULL
+						AND us.id = ?
+						GROUP BY cm.course";
+	$totalresource = $DB->get_records_sql($totalresourcesql, $totalresourceparams);
+
 	$resourcepercourse = array();
-	
+
 	// If the query brings something generate an array with all the course ids
 	if($totalresource){
 		foreach($totalresource as $totalresources){
 			$resourcepercourse[$totalresources->idcoursecm] = $totalresources->countallresource;
 		}
 	}
-	
+
 	//Parameters of the urls
 	$totalurlparams = array(
-			'url',
 			FACEBOOK_COURSE_MODULE_VISIBLE,
+			'url',
 			FACEBOOK_MODULE_VISIBLE,
-			$lastvisit
+			$moodleid
 	);
-	
-	// Merge with the params that the function brings
-	$paramsurl = array_merge($param,$totalurlparams);
-	
+
 	// Sql that counts all the urls since the last time the app was used
-	$totalurlsql = "SELECT cm.course AS idcoursecm, COUNT(cm.module) AS countallurl
-			FROM {course_modules} AS cm
-			INNER JOIN {modules} AS m ON (cm.module = m.id)
-			INNER JOIN {url} AS u ON (cm.instance=u.id)
-			WHERE cm.course $sqlin
-			AND m.name IN (?)
-			AND cm.visible = ?
-			AND m.visible = ?
-			AND  u.timemodified >= ?
-			GROUP BY cm.course";
-	
+	$totalurlsql = "SELECT 	idcoursecm, count(url) AS  countallurl
+					FROM
+					(SELECT cm.course AS idcoursecm,
+					url.id AS url,
+					url.name
+					FROM mdl_enrol AS en
+					INNER JOIN mdl_user_enrolments AS uen ON (en.id = uen.enrolid)
+					INNER JOIN mdl_course_modules AS cm ON (en.courseid = cm.course AND cm.visible = ?)
+					INNER JOIN mdl_url AS url ON (cm.instance = url.id)
+					INNER JOIN mdl_modules AS m ON (cm.module = m.id AND m.name = ?)
+					INNER JOIN mdl_user AS us ON (uen.userid = us.id)
+					INNER JOIN mdl_facebook_user AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+					WHERE url.timemodified > fb.lasttimechecked
+					AND fb.facebookid IS NOT NULL
+					AND us.id = ?
+					group by url.id,cm.course) AS tablewithdata
+					GROUP BY idcoursecm";
+
 	// Gets the infromation of the above query
-	$totalurl = $DB->get_records_sql($totalurlsql, $paramsurl);
-	
+	$totalurl = $DB->get_records_sql($totalurlsql, $totalurlparams);
+
 	$urlpercourse = array();
-	
+
 	// Makes an array that associates the course id with the counted items
 	if($totalurl){
 		foreach($totalurl as $totalurls){
 			$urlpercourse[$totalurls->idcoursecm] = $totalurls->countallurl;
 		}
 	}
-	
+
+
+
 	// Post parameters for query
 	$totalpostparams = array(
-			$lastvisit
+			FACEBOOK_COURSE_MODULE_VISIBLE,
+			$moodleid
 	);
-	// Merge with the params that the function brings
-	$paramsallpost = array_merge($param, $totalpostparams);
-	
+
 	// Sql that counts all the posts since the last time the app was conected.
-	$totalpostsql = "SELECT fd.course AS idcoursefd, COUNT(fp.id) AS countallpost
-			 FROM {forum_posts} AS fp
-			 INNER JOIN {forum_discussions} AS fd ON (fp.discussion=fd.id)
-			 WHERE fd.course $sqlin 
-			 AND fp.modified > ?
-			 GROUP BY fd.course ";
-	
-	$totalpost = $DB->get_records_sql($totalpostsql, $paramsallpost);
-	
+	$totalpostsql = "SELECT 	idcoursefd,
+			count(countallpost) AS  countallpost
+			FROM	(SELECT discussions.course AS idcoursefd,
+			COUNT(fp.id) AS countallpost
+			FROM mdl_enrol AS en
+			INNER JOIN mdl_user_enrolments AS uen ON (en.id = uen.enrolid)
+			INNER JOIN mdl_forum_discussions AS discussions ON (en.courseid = discussions.course)
+			INNER JOIN mdl_forum_posts AS fp ON (fp.discussion = discussions.id)
+			INNER JOIN mdl_forum AS forum ON (forum.id = discussions.forum)
+			INNER JOIN mdl_user AS us ON (uen.userid = us.id)
+			INNER JOIN mdl_facebook_user AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+			WHERE fp.modified > fb.lasttimechecked
+			AND fb.facebookid IS NOT NULL
+			AND us.id = ?
+			GROUP BY fp.id, discussions.course) AS tablewithdata
+			GROUP BY idcoursefd";
+
+	$totalpost = $DB->get_records_sql($totalpostsql, $totalpostparams);
+
 	$totalpostpercourse = array();
-	
+
 	// Makes an array that associates the course id with the counted items
 	if($totalpost){
 		foreach($totalpost as $objects){
 			$totalpostpercourse[$objects->idcoursefd] = $objects->countallpost;
 		}
 	}
-	
+
+
+	$paramsassignment = array(
+			MODULE_ASSIGN,
+			FACEBOOK_COURSE_MODULE_VISIBLE,
+			$moodleid
+	);
+
+	$totalassignmentsql= "SELECT a.course AS acourseid,
+						COUNT(a.id) AS countallassignments
+						FROM {assign} AS a
+						INNER JOIN {course} AS c ON (a.course = c.id)
+						INNER JOIN {enrol} AS e ON (c.id = e.courseid)
+						INNER JOIN {user_enrolments} AS ue ON (e.id = ue.enrolid)
+						INNER JOIN {user} AS us ON (us.id = ue.userid)
+						INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+						WHERE a.timemodified > fb.lasttimechecked
+						AND fb.facebookid IS NOT NULL
+						AND us.id = ?
+						GROUP BY c.id";
+
+	$totalassignment = $DB->get_records_sql($totalassignmentsql, $paramsassignment);
+	$totalassignmentpercourse = array();
+	if($totalassignment){
+		foreach($totalassignment as $objects){
+			$totalassignmentpercourse[$objects->acourseid] = $objects->countallassignments;
+		}
+	}
+
+
 	$totalemarkingperstudent = array();
 	if($CFG->fbk_emarking){
+		$paramsemarking = array(
+				FACEBOOK_LINKED,
+				$moodleid
+		);
 		$dataemarkingsql= "SELECT CONCAT(s.id,e.id,s.grade) AS ids,
-			COUNT(s.id) AS total,
-			e.id AS emarkingid,
-			e.course AS course,
-			e.name AS testname,
-			d.grade AS grade,
-			d.status AS status,
-			d.timemodified AS date,
-			s.teacher AS teacher,
-			cm.id as moduleid,
-			CONCAT(u.firstname,' ',u.lastname) AS user
-			FROM {emarking_draft} AS d INNER JOIN {emarking} AS e ON (e.id = d.emarkingid AND e.course $sqlin AND e.type in (1,5,0))
-			INNER JOIN {emarking_submission} AS s ON (d.submissionid = s.id AND d.status IN (20,30,35,40) AND s.student = ?)
-			INNER JOIN {user} AS u ON (u.id = s.student)
-			INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course  $sqlin)
-			INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking')
-			WHERE d.timemodified >= ?";
-		
-		$emarkingparams = array_merge($param,array($moodleid),$param, array($lastvisit));
-		
-		if($totalemarking = $DB->get_records_sql($dataemarkingsql, $emarkingparams)){
+				COUNT(s.id) AS total,
+				e.id AS emarkingid,
+				e.course AS course,
+				e.name AS testname,
+				d.grade AS grade,
+				d.status AS status,
+				d.timemodified AS date,
+				s.teacher AS teacher,
+				cm.id as moduleid,
+				CONCAT(us.firstname,' ',us.lastname) AS user
+				FROM {emarking_draft} AS d
+				JOIN {emarking} AS e ON (e.id = d.emarkingid AND e.type in (1,5,0))
+				INNER JOIN {emarking_submission} AS s ON (d.submissionid = s.id AND d.status IN (20,30,35,40))
+				INNER JOIN {user} AS us ON (s.student = us.id)
+				INNER JOIN {user_enrolments} AS uen ON (us.id = uen.userid)
+				INNER JOIN {enrol} AS en ON (en.id = uen.enrolid)
+				INNER JOIN {course_modules} AS cm ON (cm.instance = e.id AND cm.course = en.courseid)
+				INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = 'emarking')
+				INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+				WHERE d.timemodified > fb.lasttimechecked
+				AND fb.facebookid IS NOT NULL
+				AND us.id = ?
+				GROUP BY s.id";
+
+
+		if($totalemarking = $DB->get_records_sql($dataemarkingsql, $paramsemarking)){
 			foreach($totalemarking as $objects){
 				$totalemarkingperstudent[$objects->course] = $objects->total;
 			}
 		}
 	}
-	
-	return array($resourcepercourse, $urlpercourse, $totalpostpercourse, $totalemarkingperstudent);
+
+	return array($resourcepercourse, $urlpercourse, $totalpostpercourse, $totalassignmentpercourse, $totalemarkingperstudent);
 }
 /**
  * Sort the records by the field inside record.
@@ -685,4 +741,98 @@ function facebook_getusers(){
 	);
 	$getrecords = $DB->get_records_sql($queryusers, $paramsusers);
 	return $getrecords;
+}
+
+function facebook_getcoursesbyenrolment($enrolment, $userid){
+	global $DB;
+	if ($enrolment == "manual" || $enrolment == "self" || "meta"){
+		if ($enrolment == "meta"){
+			$isitnull = "= '' ";
+		}
+		else{
+			$isitnull = "!= '' ";
+		}
+		$sql = "SELECT c.id,
+		c.fullname
+		FROM {user_enrolments} AS ue
+		INNER JOIN {enrol} AS e ON e.id = ue.enrolid
+		INNER JOIN {course} AS c ON c.id = e.courseid
+		WHERE e.enrol =?
+		AND c.idnumber $isitnull
+		AND ue.userid =?
+		GROUP BY c.id";
+		$sqlparams = array($enrolment, $userid);
+		$queryexecution = $DB->get_records_sql($sql, $sqlparams);
+		$courses = array();
+		foreach ($queryexecution as $userscourses){
+			$courses[] = $userscourses;
+		}
+		if (!empty($courses)){
+			return $courses;
+		}
+	}
+}
+function facebook_notificationspercourse($user, $courses){
+	global $DB;
+	$courseidarray = array();
+	foreach ($courses as $course){
+		$courseidarray[] = $course->id;
+	}
+	list($sqlin, $paramcourses) = $DB->get_in_or_equal($courseidarray);
+	$coursesnotificationscounter = get_total_notification($user->id);
+
+	$finalarray = array();
+	$totalnot = 0;
+	foreach ($courseidarray AS $idarray){
+		$totalcount = 0;
+		if (isset($coursesnotificationscounter[0][$idarray])){
+			$totalcount += $coursesnotificationscounter[0][$idarray];
+
+		}if (isset($coursesnotificationscounter[1][$idarray])){
+			$totalcount += $coursesnotificationscounter[1][$idarray];
+
+		}if (isset($coursesnotificationscounter[2][$idarray])){
+			$totalcount += $coursesnotificationscounter[2][$idarray];
+
+		}if (isset($coursesnotificationscounter[3][$idarray])){
+			$totalcount += $coursesnotificationscounter[3][$idarray];
+		}if (isset($coursesnotificationscounter[4][$idarray])){
+			$totalcount += $coursesnotificationscounter[4][$idarray];
+		}
+		$totalnot += $totalcount;
+		$finalarray [$idarray] = $totalcount;
+	}
+	$finalarray [0] = $totalnot;
+
+	return $finalarray;
+}
+function paperattendance_convertdate($i) {
+	// arrays of days and months
+	$days = array (
+			get_string ( 'sunday', 'local_paperattendance' ),
+			get_string ( 'monday', 'local_paperattendance' ),
+			get_string ( 'tuesday', 'local_paperattendance' ),
+			get_string ( 'wednesday', 'local_paperattendance' ),
+			get_string ( 'thursday', 'local_paperattendance' ),
+			get_string ( 'friday', 'local_paperattendance' ),
+			get_string ( 'saturday', 'local_paperattendance' )
+	);
+	$months = array (
+			"",
+			get_string ( 'january', 'local_paperattendance' ),
+			get_string ( 'february', 'local_paperattendance' ),
+			get_string ( 'march', 'local_paperattendance' ),
+			get_string ( 'april', 'local_paperattendance' ),
+			get_string ( 'may', 'local_paperattendance' ),
+			get_string ( 'june', 'local_paperattendance' ),
+			get_string ( 'july', 'local_paperattendance' ),
+			get_string ( 'august', 'local_paperattendance' ),
+			get_string ( 'september', 'local_paperattendance' ),
+			get_string ( 'october', 'local_paperattendance' ),
+			get_string ( 'november', 'local_paperattendance' ),
+			get_string ( 'december', 'local_paperattendance' )
+	);
+
+	$dateconverted = date('H:i',$i)." - ".$days [date ( 'w', $i )] . ", " . date ( 'd', $i ) . get_string ( 'of', 'local_paperattendance').$months[date('n',$i)].get_string('from', 'local_paperattendance').date('Y',$i);
+	return $dateconverted;
 }
