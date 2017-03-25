@@ -62,8 +62,8 @@ Example:
 
 cli_heading('Facebook notifications'); 
 
-echo "\nSearching for new notifications\n";
-echo "\nStarting at ".date("F j, Y, G:i:s")."\n";
+echo "<br>Searching for new notifications<br>";
+echo "<br>Starting at ".date("F j, Y, G:i:s")."<br>";
 
 $initialtime = time();
 $notifications = 0;
@@ -221,12 +221,12 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
 			if (facebook_handleexceptions($fb, $users, $data)){
-				mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name." \n");
+				mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name." <br>");
 				$notifications = $notifications + 1;
 			}
 		}
 	}
-	mtrace("Notifications have been sent succesfully to ".$notifications." people. \n");
+	mtrace("Notifications have been sent succesfully to ".$notifications." people. <br>");
 	$finaltime = time();
 	$totaltime = $finaltime-$initialtime;
 	mtrace("Execution time: ".$totaltime." seconds.");
