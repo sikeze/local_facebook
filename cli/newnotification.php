@@ -221,7 +221,7 @@ if ($facebookusers = $DB->get_records_sql($queryusers, $paramsusers)){
 			);	
 			$fb->setDefaultAccessToken($appid.'|'.$secretid);
 			if (facebook_handleexceptions($fb, $users, $data)){
-				mtrace("Notifications sent to user with moodleid ".$users->id." - ".$users->name." <br>");
+				mtrace($totalcount." Notifications sent to user with moodleid ".$users->id." - ".$users->name." <br>");
 				$notifications = $notifications + 1;
 			}
 		}
