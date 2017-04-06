@@ -138,11 +138,11 @@ if ($userfacebookinfo != false) {
 	$moodleid = $userfacebookinfo->moodleid;
 	$lastvisit = $userfacebookinfo->lasttimechecked;
 	
+	$usercourse = enrol_get_users_courses ( $moodleid );
+	
 	// updates the user last time in the app
 	$userfacebookinfo->lasttimechecked = time ();
 	$DB->update_record ( 'facebook_user', $userfacebookinfo );
-	
-	$usercourse = enrol_get_users_courses ( $moodleid );
 	
 	// generates an array with all the users courses
 	$courseidarray = array ();
