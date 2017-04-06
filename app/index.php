@@ -140,10 +140,6 @@ if ($userfacebookinfo != false) {
 	
 	$usercourse = enrol_get_users_courses ( $moodleid );
 	
-	// updates the user last time in the app
-	$userfacebookinfo->lasttimechecked = time ();
-	$DB->update_record ( 'facebook_user', $userfacebookinfo );
-	
 	// generates an array with all the users courses
 	$courseidarray = array ();
 	foreach ( $usercourse as $courses ) {
@@ -229,7 +225,11 @@ if ($userfacebookinfo != false) {
 
 	echo "</div></div>";
 	include 'htmltoinclude/spacer.html';
-	
+
+
+	// updates the user last time in the app
+	$userfacebookinfo->lasttimechecked = time ();
+	$DB->update_record ( 'facebook_user', $userfacebookinfo );
 
 } else {
 	echo '</div></div>';
