@@ -158,6 +158,7 @@ if ($userfacebookinfo != false) {
 	// list the 3 arrays returned from the funtion
 	list ( $totalresource, $totalurl, $totalpost, $totalemarkingperstudent ) = get_total_notification ( $sqlin, $param, $lastvisit, $moodleid );
 	//$dataarray = get_data_post_resource_link ( $sqlin, $param, $moodleid );
+	var_dump($totalpost);
 	
 	// foreach that reorganizes array
 	foreach ( $usercourse as $courses ) {
