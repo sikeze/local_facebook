@@ -156,7 +156,7 @@ if ($userfacebookinfo != false) {
 	list ( $sqlin, $param ) = $DB->get_in_or_equal ( $courseidarray );
 	
 	// list the 3 arrays returned from the funtion
-	list ( $totalresource, $totalurl, $totalpost, $totalemarkingperstudent ) = get_total_notification ( $sqlin, $param, $lastvisit, $moodleid );
+	list ( $totalresource, $totalurl, $totalpost, $totalassignment, $totalemarkingperstudent ) = get_total_notification ($moodleid);
 	//$dataarray = get_data_post_resource_link ( $sqlin, $param, $moodleid );
 	var_dump($totalpost);
 	
