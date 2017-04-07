@@ -70,8 +70,8 @@ function get_total_notification($moodleid){
 	$totalresourceparams = array(
 			FACEBOOK_COURSE_MODULE_VISIBLE,
 			'resource',
-			FACEBOOK_MODULE_VISIBLE,
-			$moodleid
+			$moodleid,
+			FACEBOOK_MODULE_VISIBLE
 	);
 
 	// Sql that counts all the resourses since the last time the app was used
@@ -83,12 +83,12 @@ function get_total_notification($moodleid){
 						INNER JOIN {course_modules} AS cm ON (en.courseid = cm.course AND cm.visible = ?)
 						INNER JOIN {resource} AS r ON (cm.instance = r.id )
 						INNER JOIN {modules} AS m ON (cm.module = m.id AND m.name = ?)
-						INNER JOIN {user} AS us ON (uen.userid = us.id)
+						INNER JOIN {user} AS us ON (uen.userid = us.id AND us.id = ?)
 						INNER JOIN {facebook_user} AS fb ON (fb.moodleid = us.id AND fb.status = ?)
 						WHERE r.timemodified > fb.lasttimechecked
 						AND fb.facebookid IS NOT NULL
-						AND us.id = ?
 						GROUP BY cm.course";
+	
 	$totalresource = $DB->get_records_sql($totalresourcesql, $totalresourceparams);
 
 	$resourcepercourse = array();
@@ -151,18 +151,18 @@ function get_total_notification($moodleid){
 	$totalpostsql = "SELECT 	idcoursefd,
 			count(countallpost) AS  countallpost
 			FROM	(SELECT discussions.course AS idcoursefd,
-			COUNT(fp.id) AS countallpost
-			FROM mdl_enrol AS en
-			INNER JOIN mdl_user_enrolments AS uen ON (en.id = uen.enrolid)
-			INNER JOIN mdl_forum_discussions AS discussions ON (en.courseid = discussions.course)
-			INNER JOIN mdl_forum_posts AS fp ON (fp.discussion = discussions.id)
-			INNER JOIN mdl_forum AS forum ON (forum.id = discussions.forum)
-			INNER JOIN mdl_user AS us ON (uen.userid = us.id)
-			INNER JOIN mdl_facebook_user AS fb ON (fb.moodleid = us.id AND fb.status = ?)
-			WHERE fp.modified > fb.lasttimechecked
-			AND fb.facebookid IS NOT NULL
-			AND us.id = ?
-			GROUP BY fp.id, discussions.course) AS tablewithdata
+				COUNT(fp.id) AS countallpost
+				FROM mdl_enrol AS en
+				INNER JOIN mdl_user_enrolments AS uen ON (en.id = uen.enrolid)
+				INNER JOIN mdl_forum_discussions AS discussions ON (en.courseid = discussions.course)
+				INNER JOIN mdl_forum_posts AS fp ON (fp.discussion = discussions.id)
+				INNER JOIN mdl_forum AS forum ON (forum.id = discussions.forum)
+				INNER JOIN mdl_user AS us ON (uen.userid = us.id)
+				INNER JOIN mdl_facebook_user AS fb ON (fb.moodleid = us.id AND fb.status = ?)
+				WHERE fp.modified > fb.lasttimechecked
+				AND fb.facebookid IS NOT NULL
+				AND us.id = ?
+				GROUP BY fp.id, discussions.course) AS tablewithdata
 			GROUP BY idcoursefd";
 
 	$totalpost = $DB->get_records_sql($totalpostsql, $totalpostparams);
