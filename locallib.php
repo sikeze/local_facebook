@@ -593,7 +593,8 @@ function facebook_handleexceptions($fb, $user, $data){
 
 		// If the user hasn't installed the app, update it's record to status = 0
 		if (strpos($exception, "not installed") !== FALSE) {
-				$updatequery = "UPDATE {facebook_user}
+			mtrace("USER ".$user->name."with ID ".$user->id."does not have the App installed.");
+				/*$updatequery = "UPDATE {facebook_user}
 						SET status = ?
 						WHERE moodleid = ?";
 				$updateparams = array(
@@ -605,7 +606,7 @@ function facebook_handleexceptions($fb, $user, $data){
 				mtrace("Record updated, set status to 0. \n Moodle id: ". $user->id);
 			} else {
 				mtrace("Could not update the record. \n Moodle id: ". $user->id);
-			}
+			}*/
 		}
 	return false;
 	}
