@@ -144,7 +144,7 @@ if ($userfacebookinfo != false) {
 	$courseidarray = array ();
 	foreach ( $usercourse as $courses ) {
 		// Only visible courses
-		if($courses->visible){
+		if($courses->visible == 1){
 			$courseidarray [] = $courses->id;
 		}else{
 			// Remove invisible courses
