@@ -142,7 +142,7 @@ if ($userfacebookinfo != false) {
 	
 	// generates an array with all the users courses
 	$courseidarray = array ();
-	foreach ( $usercourse as $courses ) {
+	foreach ( $usercourse as $key => $courses ) {
 		// Only visible courses
 		if($courses->visible == 1){
 			$courseidarray [] = $courses->id;
