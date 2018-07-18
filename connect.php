@@ -168,14 +168,9 @@ if(isset($userinfo->status)){
 			"publish_actions",
 			"user_birthday",
 			"user_tagged_places",
-			"user_work_history",
-			"user_about_me",
 			"user_hometown",
-			"user_actions.books",
-			"user_education_history",
 			"user_likes",
-			"user_friends",
-			"user_religion_politics"
+			"user_friends"
 	];
 	$loginUrl = $helper->getLoginUrl(($CFG->wwwroot."/local/facebook/connect.php"), $params );
 
@@ -250,14 +245,9 @@ if($connect != NULL){
 					"publish_actions",
 					"user_birthday",
 					"user_tagged_places",
-					"user_work_history",
-					"user_about_me",
 					"user_hometown",
-					"user_actions.books",
-					"user_education_history",
 					"user_likes",
-					"user_friends",
-					"user_religion_politics"
+					"user_friends"
 			];
 			$$loginUrl = $helper->getLoginUrl(($CFG->wwwroot . "/local/facebook/connect.php"), $params );
 			echo "Please <a href='" . $login_Url . "'>Log in with Facebook..</a>";
